@@ -1,0 +1,11 @@
+// Example Swift Package Manager guidance — Xcode -> File -> Add Packages...
+// Use Tealium's official repository URL. Example repo (verify on Tealium docs):
+// https://github.com/Tealium/tealium-swift
+
+// After adding the package to your Xcode project, import the appropriate module in your Swift files, e.g.:
+// import Tealium
+
+// Then initialize according to the SDK docs. Example (pseudo-code):
+// let config = TealiumConfig(account: "yourAccount", profile: "yourProfile", environment: "dev")
+// let tealium = Tealium(config: config)
+// tealium.track(title: "app_opened")

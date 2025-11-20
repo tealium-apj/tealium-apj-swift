@@ -1,0 +1,9 @@
+# Example Podfile — adapt platform and target name to your project
+platform :ios, '14.0'
+use_frameworks!
+
+target 'TealiumSampleApp' do
+  # Replace with the official Tealium CocoaPod name/version from Tealium docs
+  # For example (check current pod name/version):
+  # pod 'TealiumSwift', '~> 6.0'
+end

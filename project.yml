@@ -1,0 +1,16 @@
+name: TealiumSampleApp
+targets:
+  TealiumSampleApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "14.0"
+    sources:
+      - Sources/TealiumSampleApp
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.example.tealium.sampleapp
+      DEVELOPMENT_TEAM: ""
+    info:
+      path: Info.plist
+      properties:
+        UIMainStoryboardFile: ""
+        UILaunchStoryboardName: LaunchScreen
