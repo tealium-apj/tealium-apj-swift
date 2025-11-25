@@ -1,108 +1,108 @@
 import SwiftUI
 import TealiumSwift
 
-// Global Tealium instance
-var tealiumInstance: Tealium?
+final class TealiumHelper: NSObject {
 
-// Simple file logger
-func logToFile(_ message: String) {
-    let timestamp = ISO8601DateFormatter().string(from: Date())
-    let logMessage = "[\(timestamp)] \(message)\n"
-    
-    let docDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    let logFile = docDir.appendingPathComponent("tealium_debug.log")
-    
-    if FileManager.default.fileExists(atPath: logFile.path) {
-        if let handle = try? FileHandle(forWritingTo: logFile) {
-            handle.seekToEndOfFile()
-            handle.write(logMessage.data(using: .utf8) ?? Data())
-            handle.closeFile()
-        }
-    } else {
-        try? logMessage.write(to: logFile, atomically: true, encoding: .utf8)
-    }
-}
+    static let shared = TealiumHelper()
 
-// Visitor Service delegate implementation (must be retained)
-class VisitorServiceHandler: NSObject, VisitorServiceDelegate {
-    func didUpdate(visitorProfile: TealiumVisitorProfile) {
-        logToFile("[VisitorService] ✓ Profile updated!")
-            logToFile("[VisitorService] Full profile received with attributes")
-            if let audiences = visitorProfile.audiences {
-                logToFile("[VisitorService] ✓ Audiences: \(audiences)")
-            } else {
-                logToFile("[VisitorService] Note: No audiences in profile")
-        }
-            if let badges = visitorProfile.badges {
-                logToFile("[VisitorService] ✓ Badges: \(badges)")
-            } else {
-                logToFile("[VisitorService] Note: No badges in profile")
+    private(set) var tealium: Tealium?
+
+    func start() {
+        let config = TealiumConfig(
+            account: "success-ryunosuke-senda",
+            profile: "mobile-test",
+            environment: "prod",
+        )
+
+        // Collectors: include Device & Connectivity when customizing, plus VisitorService
+        config.collectors = [
+            Collectors.AppData,
+            Collectors.Device,
+            Collectors.Connectivity,
+            Collectors.Lifecycle,
+            Collectors.VisitorService
+        ]
+
+        // Choose one dispatcher path (server-side via Collect shown here)
+        config.dispatchers = [Dispatchers.Collect]
+
+        // (Optional) Adjust refresh cadence for profile fetches (default is every 5 minutes)
+        config.visitorServiceRefresh = .every(15, .seconds)
+
+        // Receive profile updates
+        config.visitorServiceDelegate = self
+
+        // Enable verbose SDK logging for debugging
+        config.logLevel = .debug
+        tealium = Tealium(config: config, enableCompletion: { _ in
+            // Immediately request the latest profile on startup (optional)
+            print("[TealiumHelper] Initialization completion: gathering track data and requesting visitor profile")
+            TealiumHelper.shared.tealium?.gatherTrackData(retrieveCachedData: true) { data in
+                print("[TealiumHelper] Gathered track data after init: \(data)")
             }
-            if let strings = visitorProfile.strings {
-                logToFile("[VisitorService] String attributes: \(strings.keys.joined(separator: ", "))")
-        }
+            // Request profile
+            TealiumHelper.shared.tealium?.visitorService?.requestVisitorProfile()
+            // Also check cached profile shortly after
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                if let cached = TealiumHelper.shared.tealium?.visitorService?.cachedProfile {
+                    print("[TealiumHelper] Cached profile present after init: \(cached)")
+                } else {
+                    print("[TealiumHelper] No cached profile found after init completion")
+                }
+            }
+        })
+    }
+
+    // Example track call that also forces an immediate profile refresh
+    func track(event: String, data: [String: Any]? = nil) {
+        let dispatch = TealiumEvent(event, dataLayer: data)
+            tealium?.track(dispatch)
+            // Ensure we request the profile a short time after sending a track event to allow visitorId to be established
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                TealiumHelper.shared.tealium?.visitorService?.requestVisitorProfile()
+                print("[TealiumHelper] Forced visitor profile request after track")
+            }
+    }
+
+    // Access the last cached profile anytime (e.g., to pre-populate UI)
+    var cachedVisitorProfile: TealiumVisitorProfile? {
+        tealium?.visitorService?.cachedProfile
     }
 }
 
-// Retain the delegate for the lifetime of the app
-let visitorServiceHandler = VisitorServiceHandler()
-
+// App entrypoint using SwiftUI - starts the Tealium helper and shows ContentView
 @main
 struct TealiumSampleAppApp: App {
     init() {
-        logToFile("[Tealium] Initializing...")
-        let config = TealiumConfig(
-            account: "senda-ryunosuke-senda",
-            profile: "mobile-test",
-            environment: "prod"
-        )
-
-        // Enable verbose logging to see what Tealium is doing
-        config.logLevel = .debug
-
-        // Enable desired collectors and dispatchers via config properties
-        config.collectors = [Collectors.AppData, Collectors.VisitorService, Collectors.Connectivity]
-        config.dispatchers = [Dispatchers.Collect]
-
-        // Register the retained visitor service delegate so the Visitor Service will fetch profiles
-        config.visitorServiceDelegate = visitorServiceHandler
-        
-        // Set explicit refresh to trigger immediately and then periodically
-        config.visitorServiceRefresh = .every(5, .seconds)
-
-        // Initialize Tealium and request visitor profile in the init completion (per docs)
-        tealiumInstance = Tealium(config: config) { _ in
-            // Optional: send a lightweight track to ensure a visitor ID exists
-            if let t = tealiumInstance {
-                let initEvent = TealiumEvent("app_init", dataLayer: ["source": "auto_init"])
-                t.track(initEvent)
-                logToFile("[Tealium] Sent initial track event to establish visitor ID")
-            }
-
-            logToFile("[Tealium] ✓ Initialized with Visitor Service enabled (refresh: every 5 minutes)")
-
-            // Request visitor profile immediately once Tealium is initialized
-            logToFile("[Tealium] Requesting visitor profile (init completion)...")
-            if let vs = tealiumInstance?.visitorService {
-                logToFile("[Tealium] Visitor Service exists, requesting profile...")
-                vs.requestVisitorProfile()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    if let cached = vs.cachedProfile {
-                        logToFile("[Tealium] ✓ Cached profile found")
-                        logToFile("[Tealium] Profile has audiences: \(cached.audiences != nil)")
-                    } else {
-                        logToFile("[Tealium] Note: No cached profile yet")
-                    }
-                }
-            } else {
-                logToFile("[Tealium] ERROR: Visitor Service is nil in completion handler!")
-            }
-        }
+        TealiumHelper.shared.start()
     }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+        }
+    }
+}
+
+// MARK: - Visitor Service Delegate
+
+extension TealiumHelper: VisitorServiceDelegate {
+
+    func didUpdate(visitorProfile: TealiumVisitorProfile) {
+        // Audiences membership by ID
+        if let audiences = visitorProfile.audiences,
+           audiences["account_profile_106"] != nil {
+            print("Member of audience id 106")
+        }
+
+        // Badge presence by ID
+        if let isVIP = visitorProfile.badges?["vip_customer"], isVIP {
+            print("VIP badge assigned")
+        }
+
+        // Current visit example (audiences/badges are visitor-scope only)
+        if let currentVisitString = visitorProfile.currentVisit?.strings?["34"] {
+            print("Current visit string attribute 34: \(currentVisitString)")
         }
     }
 }

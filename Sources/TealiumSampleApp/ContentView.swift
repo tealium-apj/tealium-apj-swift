@@ -1,5 +1,4 @@
 import SwiftUI
-import TealiumSwift
 
 struct ContentView: View {
     var body: some View {
@@ -10,10 +9,8 @@ struct ContentView: View {
                     .padding()
 
                 Button(action: {
-                    // Track a simple event using Tealium
-                    let event = TealiumEvent("button_pressed", dataLayer: ["button": "track_event_button"])
-                    tealiumInstance?.track(event)
-                    logToFile("[ContentView] Event tracked: button_pressed")
+                    TealiumHelper.shared.track(event: "button_pressed", data: ["button": "track_event_button"]) 
+                    print("[ContentView] Event tracked: button_pressed")
                 }) {
                     Text("Track Event")
                         .font(.headline)
@@ -22,14 +19,14 @@ struct ContentView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
-                
+
                 Button(action: {
-                    logToFile("[ContentView] Requesting visitor profile...")
-                    if let visitorService = tealiumInstance?.visitorService {
+                    print("[ContentView] Requesting visitor profile...")
+                    if let visitorService = TealiumHelper.shared.tealium?.visitorService {
                         visitorService.requestVisitorProfile()
-                        logToFile("[ContentView] ✓ Visitor profile request sent")
+                        print("[ContentView] ✓ Visitor profile request sent")
                     } else {
-                        logToFile("[ContentView] ✗ Visitor Service is nil!")
+                        print("[ContentView] ✗ Visitor Service is nil!")
                     }
                 }) {
                     Text("Request Visitor Profile")

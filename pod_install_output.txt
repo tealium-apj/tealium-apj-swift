@@ -1,0 +1,7 @@
+Updating local specs repositories
+Analyzing dependencies
+Downloading dependencies
+Installing tealium-swift (2.18.1)
+Generating Pods project
+Integrating client project
+Pod installation complete! There is 1 dependency from the Podfile and 1 total pod installed.
