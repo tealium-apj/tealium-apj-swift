@@ -63,12 +63,15 @@ final class TealiumHelper: NSObject {
         ) { response in
             print("[RemoteCommand] Received response: \(response)")
         }
+        print("Sample Remote Command: \(sampleRemoteCommand)")
 
         // Add to the config so it is registered during initialization (if Firebase vendor isn't installed)
     #if canImport(TealiumFirebase)
         // Using the TealiumFirebase vendor integration; the FirebaseRemoteCommand will be added in the Tealium init completion
+        print("TealiumFirebase imported")
     #else
         config.remoteCommands = [sampleRemoteCommand]
+        print("TealiumFirebase NOT imported; added sample remote command directly")
     #endif
     }
 
