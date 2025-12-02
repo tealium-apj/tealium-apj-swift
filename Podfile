@@ -16,6 +16,8 @@ target 'TealiumSampleApp' do
   # Add if you need Remote Commands (for vendor SDKs via iQ or JSON)
   pod 'tealium-swift/RemoteCommands'
 
+  pod 'TealiumFirebase'                     # Firebase integration module
+
   # Optional modules (uncomment as needed)
   # VisitorService removed from sample - uncomment to re-enable
   # pod 'tealium-swift/VisitorService'  # fetch AudienceStream visitor profile info
