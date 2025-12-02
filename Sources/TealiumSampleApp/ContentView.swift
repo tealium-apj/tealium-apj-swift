@@ -21,15 +21,11 @@ struct ContentView: View {
                 }
 
                 Button(action: {
-                    print("[ContentView] Requesting visitor profile...")
-                    if let visitorService = TealiumHelper.shared.tealium?.visitorService {
-                        visitorService.requestVisitorProfile()
-                        print("[ContentView] ✓ Visitor profile request sent")
-                    } else {
-                        print("[ContentView] ✗ Visitor Service is nil!")
-                    }
+                    print("[ContentView] Triggering RemoteCommands JSON commands (if any)")
+                    let data: [String: Any] = ["payload": ["sdk_event": "triggered_from_app"]]
+                    TealiumHelper.shared.tealium?.remoteCommands?.trigger(command: .JSON, with: data, completion: nil)
                 }) {
-                    Text("Request Visitor Profile")
+                    Text("Trigger Remote Commands")
                         .font(.headline)
                         .padding()
                         .background(Color.green)
