@@ -46,16 +46,17 @@ final class TealiumHelper {
     private func initTealium() {
         // 1. Base config with your account/profile/env
         let config = TealiumConfig(
-            account:    "success-ryunosuke-senda",
-            profile:    "mobile-test",
-            environment:"prod",
-            dataSource: "DATASOURCE"   // TODO: replace with your real CDH data source key
+            account:    "housing.com",
+            profile:    "main",
+            environment:"dev",
+            dataSource: "sj4tup"   // TODO: replace with your real CDH data source key
         )
 
         // 2. Enable Collect + RemoteCommands dispatchers
         config.dispatchers = [
             Dispatchers.Collect,
-            Dispatchers.RemoteCommands
+            Dispatchers.RemoteCommands,
+            Dispatchers.TagManagement
         ]
 
         // Optional explicit collectors (or omit to use defaults)
@@ -102,8 +103,9 @@ final class TealiumHelper {
             return
         }
 
-        let firebaseJsonUrl = "https://firebasestorage.googleapis.com/v0/b/skilful-racer-95713.appspot.com/o/Tealium%2Ffirebase_remote_commands?alt=media"
-
+        //let firebaseJsonUrl = "https://firebasestorage.googleapis.com/v0/b/skilful-racer-95713.appspot.com/o/Tealium%2Ffirebase_remote_commands?alt=media"
+        let firebaseJsonUrl = "https://firebasestorage.googleapis.com/v0/b/river-oxygen-792.appspot.com/o/Tealium%2Ffirebase_remote_commands?alt=media&token=5ded980f-6aca-4f3c-9d04-abab4645331e"
+        
         let firebaseRemoteCommand = RemoteCommand(
             commandId: "firebase_remote",
             description: "Firebase remote commands JSON",
