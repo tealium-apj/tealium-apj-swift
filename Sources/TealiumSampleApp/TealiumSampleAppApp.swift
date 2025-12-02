@@ -1,4 +1,7 @@
 import SwiftUI
+#if canImport(TealiumCore)
+import TealiumCore
+#endif
 import TealiumSwift
 #if canImport(TealiumFirebase)
 import TealiumFirebase
@@ -9,6 +12,9 @@ final class TealiumHelper: NSObject {
     static let shared = TealiumHelper()
 
     private(set) var tealium: Tealium?
+    #if canImport(TealiumCore)
+    private var disposeBag = TealiumDisposeBag()
+    #endif
 
     func start() {
         let config = TealiumConfig(
@@ -50,6 +56,29 @@ final class TealiumHelper: NSObject {
                 print("[TealiumHelper] Registered FirebaseRemoteCommand via TealiumFirebase")
             }
 #endif
+
+            // Subscribe to remote command changes so we can log when a config is fetched/updated
+            if let remoteCommands = TealiumHelper.shared.tealium?.remoteCommands {
+                #if canImport(TealiumCore)
+                remoteCommands.onCommandsChanged.subscribe { commands in
+                    print("[TealiumHelper] Remote commands changed - registered command ids: \(commands.map { $0.commandId })")
+                    for command in commands {
+                        if let config = command.config {
+                            print("[TealiumHelper] Command id: \(command.commandId) file: \(config.fileName ?? "") url: \(config.commandURL?.absoluteString ?? "nil") lastFetch: \(String(describing: config.lastFetch))")
+                            if let statics = config.statics { print("[TealiumHelper] Statics for \(command.commandId): \(statics)") }
+                            if let mappings = config.mappings { print("[TealiumHelper] Mappings for \(command.commandId): \(mappings)") }
+                        } else {
+                            print("[TealiumHelper] Command id: \(command.commandId) has no config yet")
+                        }
+                    }
+                }.toDisposeBag(TealiumHelper.shared.disposeBag)
+                #else
+                // If TealiumCore isn't available, fallback to a simple print
+                remoteCommands.onCommandsChanged.subscribe { commands in
+                    print("[TealiumHelper] Remote commands changed - registered command ids: \(commands.map { $0.commandId })")
+                }
+                #endif
+            }
         })
 
         // Register a sample remote command using a placeholder JSON configuration URL.
@@ -62,6 +91,11 @@ final class TealiumHelper: NSObject {
             type: .remote(url: placeholderRemoteCommandURL)
         ) { response in
             print("[RemoteCommand] Received response: \(response)")
+            if let payload = response.payload {
+                print("[RemoteCommand] Received payload (mapped from JSON): \(payload)")
+            } else {
+                print("[RemoteCommand] No payload present in response")
+            }
         }
         print("Sample Remote Command: \(sampleRemoteCommand)")
 
