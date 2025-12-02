@@ -8,9 +8,23 @@ struct ContentView: View {
                     .font(.largeTitle)
                     .padding()
 
+                Text(TealiumHelper.shared.debugConfigSummary)
+                    .font(.footnote)
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.leading)
+
                 Button(action: {
-                    TealiumHelper.shared.track(event: "button_pressed", data: ["button": "track_event_button"]) 
+                    TealiumHelper.shared.track(
+                        event: "button_pressed",
+                        data: ["button": "track_event_button"]
+                    )
                     print("[ContentView] Event tracked: button_pressed")
+
+                    if let vid = TealiumHelper.shared.tealium?.visitorId {
+                        print("[ContentView] Current visitorId: \(vid)")
+                    } else {
+                        print("[ContentView] visitorId is nil (Tealium not yet fully initialized?)")
+                    }
                 }) {
                     Text("Track Event")
                         .font(.headline)
@@ -21,9 +35,17 @@ struct ContentView: View {
                 }
 
                 Button(action: {
-                    print("[ContentView] Triggering RemoteCommands JSON commands (if any)")
-                    let data: [String: Any] = ["payload": ["sdk_event": "triggered_from_app"]]
-                    TealiumHelper.shared.tealium?.remoteCommands?.trigger(command: .JSON, with: data, completion: nil)
+                    print("[ContentView] Triggering Firebase RemoteCommands JSON commands (if any)")
+
+                    let data: [String: Any] = [
+                        "payload": [
+                            "sdk_event": "triggered_from_app_button"
+                        ]
+                    ]
+
+                    TealiumHelper.shared.tealium?
+                        .remoteCommands?
+                        .trigger(command: .JSON, with: data, completion: nil)
                 }) {
                     Text("Trigger Remote Commands")
                         .font(.headline)

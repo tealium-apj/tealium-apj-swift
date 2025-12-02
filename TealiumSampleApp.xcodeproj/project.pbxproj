@@ -9,17 +9,19 @@
 /* Begin PBXBuildFile section */
 		0000000000000018 /* TealiumSampleAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000000000001 /* TealiumSampleAppApp.swift */; };
 		0000000000000019 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000000000002 /* ContentView.swift */; };
-		EEE5BCACE877FADBB413DF73 /* Pods_TealiumSampleApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84219EBC54A143C5A5CECA52 /* Pods_TealiumSampleApp.framework */; };
+		1A2E51FC89634FD29869846B /* Pods_TealiumSampleApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44F3F3BBE67F7ED45FE35F95 /* Pods_TealiumSampleApp.framework */; };
+		2EF75FAF2EDEB1B6007036E9 /* TealiumHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF75FAE2EDEB1B6007036E9 /* TealiumHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0000000000000001 /* TealiumSampleAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TealiumSampleAppApp.swift; sourceTree = "<group>"; };
 		0000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0000000000000003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0000000000000015 /* TealiumSampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TealiumSampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		58CA50F0CB1D6F23C7066145 /* Pods-TealiumSampleApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TealiumSampleApp.release.xcconfig"; path = "Target Support Files/Pods-TealiumSampleApp/Pods-TealiumSampleApp.release.xcconfig"; sourceTree = "<group>"; };
-		84219EBC54A143C5A5CECA52 /* Pods_TealiumSampleApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TealiumSampleApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		BFB07279EABB3D67887EB741 /* Pods-TealiumSampleApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TealiumSampleApp.debug.xcconfig"; path = "Target Support Files/Pods-TealiumSampleApp/Pods-TealiumSampleApp.debug.xcconfig"; sourceTree = "<group>"; };
+		2E6DF99F2EDEAC7700014EAA /* TealiumSampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TealiumSampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2EF75FAE2EDEB1B6007036E9 /* TealiumHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TealiumHelper.swift; sourceTree = "<group>"; };
+		44F3F3BBE67F7ED45FE35F95 /* Pods_TealiumSampleApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TealiumSampleApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		45DBC6B74B92589971A37EC2 /* Pods-TealiumSampleApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TealiumSampleApp.debug.xcconfig"; path = "Target Support Files/Pods-TealiumSampleApp/Pods-TealiumSampleApp.debug.xcconfig"; sourceTree = "<group>"; };
+		C15BACAD1F5971E16D55B1C9 /* Pods-TealiumSampleApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TealiumSampleApp.release.xcconfig"; path = "Target Support Files/Pods-TealiumSampleApp/Pods-TealiumSampleApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,7 +29,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EEE5BCACE877FADBB413DF73 /* Pods_TealiumSampleApp.framework in Frameworks */,
+				1A2E51FC89634FD29869846B /* Pods_TealiumSampleApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37,6 +39,7 @@
 		0000000000000004 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				2E6DF99F2EDEAC7700014EAA /* TealiumSampleApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -44,6 +47,7 @@
 		0000000000000005 /* TealiumSampleApp */ = {
 			isa = PBXGroup;
 			children = (
+				2EF75FAE2EDEB1B6007036E9 /* TealiumHelper.swift */,
 				0000000000000001 /* TealiumSampleAppApp.swift */,
 				0000000000000002 /* ContentView.swift */,
 				0000000000000003 /* Info.plist */,
@@ -57,27 +61,26 @@
 			children = (
 				0000000000000005 /* TealiumSampleApp */,
 				0000000000000004 /* Products */,
-				142FDD48FDAA9C780F292023 /* Pods */,
-				ADDA978D3AE4131B547C6078 /* Frameworks */,
+				FEA92D15D558649B26775B49 /* Pods */,
+				7E7E06EABDF216188071D8CB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		142FDD48FDAA9C780F292023 /* Pods */ = {
+		7E7E06EABDF216188071D8CB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BFB07279EABB3D67887EB741 /* Pods-TealiumSampleApp.debug.xcconfig */,
-				58CA50F0CB1D6F23C7066145 /* Pods-TealiumSampleApp.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		ADDA978D3AE4131B547C6078 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				84219EBC54A143C5A5CECA52 /* Pods_TealiumSampleApp.framework */,
+				44F3F3BBE67F7ED45FE35F95 /* Pods_TealiumSampleApp.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FEA92D15D558649B26775B49 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				45DBC6B74B92589971A37EC2 /* Pods-TealiumSampleApp.debug.xcconfig */,
+				C15BACAD1F5971E16D55B1C9 /* Pods-TealiumSampleApp.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -87,10 +90,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0000000000000012 /* Build configuration list for PBXNativeTarget "TealiumSampleApp" */;
 			buildPhases = (
-				1A8B8DD219B7524DA14C4D60 /* [CP] Check Pods Manifest.lock */,
+				A7762AF18C16BDA8C446CF6C /* [CP] Check Pods Manifest.lock */,
 				0000000000000013 /* Sources */,
 				0000000000000014 /* Frameworks */,
-				0BBE42FD6C4303951E93BEB0 /* [CP] Embed Pods Frameworks */,
+				E114C79AAC7748418E218865 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -98,7 +101,7 @@
 			);
 			name = TealiumSampleApp;
 			productName = TealiumSampleApp;
-			productReference = 0000000000000015 /* TealiumSampleApp.app */;
+			productReference = 2E6DF99F2EDEAC7700014EAA /* TealiumSampleApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -126,24 +129,7 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0BBE42FD6C4303951E93BEB0 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TealiumSampleApp/Pods-TealiumSampleApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TealiumSampleApp/Pods-TealiumSampleApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TealiumSampleApp/Pods-TealiumSampleApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		1A8B8DD219B7524DA14C4D60 /* [CP] Check Pods Manifest.lock */ = {
+		A7762AF18C16BDA8C446CF6C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -165,6 +151,27 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		E114C79AAC7748418E218865 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TealiumSampleApp/Pods-TealiumSampleApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TealiumSampleApp/Pods-TealiumSampleApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TealiumSampleApp/Pods-TealiumSampleApp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -173,6 +180,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0000000000000018 /* TealiumSampleAppApp.swift in Sources */,
+				2EF75FAF2EDEB1B6007036E9 /* TealiumHelper.swift in Sources */,
 				0000000000000019 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -312,7 +320,7 @@
 		};
 		0000000000000016 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BFB07279EABB3D67887EB741 /* Pods-TealiumSampleApp.debug.xcconfig */;
+			baseConfigurationReference = 45DBC6B74B92589971A37EC2 /* Pods-TealiumSampleApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -330,7 +338,7 @@
 		};
 		0000000000000017 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 58CA50F0CB1D6F23C7066145 /* Pods-TealiumSampleApp.release.xcconfig */;
+			baseConfigurationReference = C15BACAD1F5971E16D55B1C9 /* Pods-TealiumSampleApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
