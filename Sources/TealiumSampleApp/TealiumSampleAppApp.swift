@@ -6,12 +6,14 @@ final class TealiumHelper: NSObject {
     static let shared = TealiumHelper()
 
     private(set) var tealium: Tealium?
+    // Keep a reference to the config object we used to initialize Tealium
+    private(set) var config: TealiumConfig?
 
     func start() {
         let config = TealiumConfig(
-            account: "success-ryunosuke-senda",
-            profile: "mobile-test",
-            environment: "prod",
+            account: "rea-group",
+            profile: "mobile",
+            environment: "qa",
         )
 
         // Collectors: include Device & Connectivity when customizing, plus VisitorService
@@ -24,7 +26,7 @@ final class TealiumHelper: NSObject {
         ]
 
         // Choose one dispatcher path (server-side via Collect shown here)
-        config.dispatchers = [Dispatchers.Collect]
+        config.dispatchers = [Dispatchers.Collect, Dispatchers.TagManagement]
 
         // (Optional) Adjust refresh cadence for profile fetches (default is every 5 minutes)
         config.visitorServiceRefresh = .every(15, .seconds)
@@ -32,8 +34,12 @@ final class TealiumHelper: NSObject {
         // Receive profile updates
         config.visitorServiceDelegate = self
 
+        // (Optional) Override profile for testing different audience/badge sets
+        config.visitorServiceOverrideProfile = "main"
+
         // Enable verbose SDK logging for debugging
         config.logLevel = .debug
+        self.config = config
         tealium = Tealium(config: config, enableCompletion: { _ in
             // Immediately request the latest profile on startup (optional)
             print("[TealiumHelper] Initialization completion: gathering track data and requesting visitor profile")
@@ -104,5 +110,12 @@ extension TealiumHelper: VisitorServiceDelegate {
         if let currentVisitString = visitorProfile.currentVisit?.strings?["34"] {
             print("Current visit string attribute 34: \(currentVisitString)")
         }
+        // Post a notification so UI components can react to profile updates
+        NotificationCenter.default.post(name: .tealiumVisitorProfileUpdated, object: nil, userInfo: ["profile": visitorProfile])
     }
+}
+
+// Notification helpers used by the app UI
+extension Notification.Name {
+    static let tealiumVisitorProfileUpdated = Notification.Name("tealiumVisitorProfileUpdated")
 }

@@ -11,7 +11,7 @@ target 'TealiumSampleApp' do
 
   # Server-side (EventStream/AudienceStream, etc.)
   pod 'tealium-swift/Collect'          # sends to Tealium Customer Data Hub
-  # pod 'tealium-swift/TagManagement'  # OR client-side via iQ (don’t usually use both)
+  pod 'tealium-swift/TagManagement'  # OR client-side via iQ (don’t usually use both)
 
   # Add if you need Remote Commands (for vendor SDKs via iQ or JSON)
   pod 'tealium-swift/RemoteCommands'

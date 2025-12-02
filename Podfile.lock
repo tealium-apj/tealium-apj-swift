@@ -6,6 +6,8 @@ PODS:
     - tealium-swift/Core
   - tealium-swift/RemoteCommands (2.11.1):
     - tealium-swift/Core
+  - tealium-swift/TagManagement (2.11.1):
+    - tealium-swift/Core
   - tealium-swift/VisitorService (2.11.1):
     - tealium-swift/Core
 
@@ -14,6 +16,7 @@ DEPENDENCIES:
   - tealium-swift/Core
   - tealium-swift/Lifecycle
   - tealium-swift/RemoteCommands
+  - tealium-swift/TagManagement
   - tealium-swift/VisitorService
 
 SPEC REPOS:
@@ -23,6 +26,6 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   tealium-swift: e904760e180bada93e78e760d5349c0be06f350f
 
-PODFILE CHECKSUM: e1549cb8a9796371b33c88e6f121ab1e17fe76d8
+PODFILE CHECKSUM: 695ca8fd2673c2ecb4b065660de358ac4fe9608a
 
 COCOAPODS: 1.16.2
