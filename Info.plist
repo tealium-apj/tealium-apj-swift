@@ -48,5 +48,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We use your device’s advertising ID to measure and improve our advertising.</string>
 </dict>
 </plist>

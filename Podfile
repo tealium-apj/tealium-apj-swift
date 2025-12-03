@@ -1,24 +1,13 @@
-# Podfile
-platform :ios, '11.0'  # adjust to your app's minimum iOS version
+platform :ios, '14.0'
+
 target 'TealiumSampleApp' do
   use_frameworks!
 
-  # Core + common collectors/dispatchers
+  # Tealium core + required modules
   pod 'tealium-swift/Core'
+  pod 'tealium-swift/Collect'
   pod 'tealium-swift/Lifecycle'
 
-  # Choose ONE primary dispatcher path:
-
-  # Server-side (EventStream/AudienceStream, etc.)
-  pod 'tealium-swift/Collect'          # sends to Tealium Customer Data Hub
-  pod 'tealium-swift/TagManagement'  # OR client-side via iQ (don’t usually use both)
-
-  # Add if you need Remote Commands (for vendor SDKs via iQ or JSON)
-  pod 'tealium-swift/RemoteCommands'
-
-  # Optional modules (uncomment as needed)
-  pod 'tealium-swift/VisitorService'  # fetch AudienceStream visitor profile info
-  # pod 'tealium-swift/Attribution'     # iOS-only attribution/IDFA
-  # pod 'tealium-swift/Location'        # location/geofencing
-  # pod 'TealiumCrashModule'            # crash reporting (installs crash reporter dep)
+  # Tealium Attribution module (provides device_advertising_id, etc.)
+  pod 'tealium-swift/Attribution'
 end

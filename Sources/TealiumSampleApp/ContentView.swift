@@ -1,39 +1,51 @@
 import SwiftUI
-import TealiumSwift
+
+@main
+struct TealiumSampleAppApp: App {
+    @StateObject private var tealiumManager = TealiumManager()
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environmentObject(tealiumManager)
+        }
+    }
+}
 
 struct ContentView: View {
-    @State private var tagProfile: String = "(unknown)"
-    @State private var publishSettingsProfile: String = "(unknown)"
-    @State private var visitorServiceProfile: String = "(none)"
-    @State private var visitorProfileSummary: String = "(none)"
+    @EnvironmentObject var tealiumManager: TealiumManager
+
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                // Display the currently configured Tealium profile and visitor profile state
-                VStack(spacing: 4) {
-                    Text("Config profile: \(tagProfile)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Text("Publish settings profile: \(publishSettingsProfile)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Text("Visitor Service profile: \(visitorServiceProfile)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Text("Visitor profile: \(visitorProfileSummary)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 16) {
+                Group {
+                    Text("IDFA (device_advertising_id)")
+                        .font(.headline)
+                    Text(tealiumManager.idfa)
+                        .font(.system(.body, design: .monospaced))
+                        .lineLimit(3)
+
+                    Text("Advertising Enabled (device_advertising_enabled)")
+                        .font(.headline)
+                        .padding(.top, 8)
+                    Text(tealiumManager.advertisingEnabled)
+                        .font(.system(.body, design: .monospaced))
+
+                    Text("ATT Status (device_tracking_authorization)")
+                        .font(.headline)
+                        .padding(.top, 8)
+                    Text(tealiumManager.trackingAuthorization)
+                        .font(.system(.body, design: .monospaced))
                 }
-                Text("Tealium Sample App")
-                    .font(.largeTitle)
-                    .padding()
+
+                Spacer()
 
                 Button(action: {
-                    TealiumHelper.shared.track(event: "button_pressed", data: ["button": "track_event_button"]) 
-                    print("[ContentView] Event tracked: button_pressed")
+                    print("Refresh button tapped.")
+                    tealiumManager.refreshValues()
                 }) {
-                    Text("Track Event")
-                        .font(.headline)
+                    Text("Refresh Values")
+                        .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.blue)
                         .foregroundColor(.white)
@@ -41,62 +53,24 @@ struct ContentView: View {
                 }
 
                 Button(action: {
-                    print("[ContentView] Requesting visitor profile...")
-                    if let visitorService = TealiumHelper.shared.tealium?.visitorService {
-                        visitorService.requestVisitorProfile()
-                        print("[ContentView] ✓ Visitor profile request sent")
-                    } else {
-                        print("[ContentView] ✗ Visitor Service is nil!")
-                    }
+                    print("Sending test event via Tealium.")
+                    tealiumManager.trackTestEvent()
                 }) {
-                    Text("Request Visitor Profile")
-                        .font(.headline)
+                    Text("Send Test Event (Optional)")
+                        .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.green)
-                        .foregroundColor(.white)
+                        .background(Color.gray.opacity(0.2))
+                        .foregroundColor(.blue)
                         .cornerRadius(8)
                 }
 
-                Spacer()
             }
             .padding()
-            .navigationTitle("Home")
-                .onAppear {
-                // Read initial values from the Tealium helper
-                if let config = TealiumHelper.shared.config {
-                    // config.profile is non-optional
-                    tagProfile = config.profile
-                    publishSettingsProfile = config.publishSettingsProfile ?? config.profile
-                    visitorServiceProfile = config.visitorServiceOverrideProfile ?? config.profile
-                } else {
-                    tagProfile = "(none)"
-                    publishSettingsProfile = "(none)"
-                    visitorServiceProfile = "(none)"
-                }
-                if let cached = TealiumHelper.shared.cachedVisitorProfile {
-                    visitorProfileSummary = cached.audiences?.keys.joined(separator: ", ") ?? "(present)"
-                } else {
-                    visitorProfileSummary = "(none)"
-                }
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .tealiumVisitorProfileUpdated)) { notification in
-                // Update UI when visitor profile updates arrive
-                if let profile = notification.userInfo?["profile"] as? TealiumVisitorProfile {
-                    visitorProfileSummary = profile.audiences?.keys.joined(separator: ", ") ?? "(present)"
-                    print("[ContentView] Received updated visitor profile; audiences: \(visitorProfileSummary)")
-                } else {
-                    // Fallback to cached value
-                    if let cached = TealiumHelper.shared.cachedVisitorProfile {
-                        visitorProfileSummary = cached.audiences?.keys.joined(separator: ", ") ?? "(present)"
-                    }
-                }
-            }
+            .navigationTitle("Tealium IDFA Test")
         }
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+        .onAppear {
+            print("ContentView appeared – requesting initial refresh.")
+            tealiumManager.refreshValues()
+        }
     }
 }

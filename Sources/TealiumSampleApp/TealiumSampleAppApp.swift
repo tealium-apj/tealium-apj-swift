@@ -1,121 +1,117 @@
-import SwiftUI
+import Foundation
+import Combine
 import TealiumSwift
+import AppTrackingTransparency
+import AdSupport
 
-final class TealiumHelper: NSObject {
+final class TealiumManager: ObservableObject {
 
-    static let shared = TealiumHelper()
+    // MARK: - Published properties for SwiftUI
 
-    private(set) var tealium: Tealium?
-    // Keep a reference to the config object we used to initialize Tealium
-    private(set) var config: TealiumConfig?
+    @Published var idfa: String = "N/A"
+    @Published var advertisingEnabled: String = "N/A"
+    @Published var trackingAuthorization: String = "N/A"
 
-    func start() {
+    // MARK: - Internal Tealium instance
+
+    private var tealium: Tealium?
+
+    // MARK: - Init
+
+    init() {
+        setupTealium()
+    }
+
+    // MARK: - Tealium Setup
+
+    private func setupTealium() {
+        // TODO: replace with your actual Tealium account/profile/env
         let config = TealiumConfig(
-            account: "rea-group",
-            profile: "mobile",
-            environment: "qa",
+            account: "success-ryunosuke-senda",
+            profile: "mobile-test",
+            environment: "prod"
         )
 
-        // Collectors: include Device & Connectivity when customizing, plus VisitorService
+        // Collectors: AppData, Device, Attribution
         config.collectors = [
             Collectors.AppData,
             Collectors.Device,
-            Collectors.Connectivity,
-            Collectors.Lifecycle,
-            Collectors.VisitorService
+            Collectors.Attribution
         ]
 
-        // Choose one dispatcher path (server-side via Collect shown here)
-        config.dispatchers = [Dispatchers.Collect, Dispatchers.TagManagement]
+        // Dispatcher: Collect (to send events to Tealium CDH)
+        config.dispatchers = [
+            Dispatchers.Collect
+        ]
 
-        // (Optional) Adjust refresh cadence for profile fetches (default is every 5 minutes)
-        config.visitorServiceRefresh = .every(15, .seconds)
-
-        // Receive profile updates
-        config.visitorServiceDelegate = self
-
-        // (Optional) Override profile for testing different audience/badge sets
-        config.visitorServiceOverrideProfile = "main"
-
-        // Enable verbose SDK logging for debugging
+        // Optional: more verbose logging while testing
         config.logLevel = .debug
-        self.config = config
-        tealium = Tealium(config: config, enableCompletion: { _ in
-            // Immediately request the latest profile on startup (optional)
-            print("[TealiumHelper] Initialization completion: gathering track data and requesting visitor profile")
-            TealiumHelper.shared.tealium?.gatherTrackData(retrieveCachedData: true) { data in
-                print("[TealiumHelper] Gathered track data after init: \(data)")
-            }
-            // Request profile
-            TealiumHelper.shared.tealium?.visitorService?.requestVisitorProfile()
-            // Also check cached profile shortly after
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                if let cached = TealiumHelper.shared.tealium?.visitorService?.cachedProfile {
-                    print("[TealiumHelper] Cached profile present after init: \(cached)")
-                } else {
-                    print("[TealiumHelper] No cached profile found after init completion")
+
+        // Initialize Tealium using the designated initializer (no static .initialize)
+        tealium = Tealium(config: config) { [weak self] _ in
+            print("Tealium initialized successfully.")
+            self?.requestATTAndRefresh()
+        }
+    }
+
+    // MARK: - ATT Request
+
+    private func requestATTAndRefresh() {
+        if #available(iOS 14, *) {
+            ATTrackingManager.requestTrackingAuthorization { [weak self] status in
+                print("ATT authorization status: \(status.rawValue)")
+                DispatchQueue.main.async {
+                    self?.refreshValues()
                 }
             }
-        })
-    }
-
-    // Example track call that also forces an immediate profile refresh
-    func track(event: String, data: [String: Any]? = nil) {
-        let dispatch = TealiumEvent(event, dataLayer: data)
-            tealium?.track(dispatch)
-            // Ensure we request the profile a short time after sending a track event to allow visitorId to be established
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                TealiumHelper.shared.tealium?.visitorService?.requestVisitorProfile()
-                print("[TealiumHelper] Forced visitor profile request after track")
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                self?.refreshValues()
             }
-    }
-
-    // Access the last cached profile anytime (e.g., to pre-populate UI)
-    var cachedVisitorProfile: TealiumVisitorProfile? {
-        tealium?.visitorService?.cachedProfile
-    }
-}
-
-// App entrypoint using SwiftUI - starts the Tealium helper and shows ContentView
-@main
-struct TealiumSampleAppApp: App {
-    init() {
-        TealiumHelper.shared.start()
-    }
-
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
         }
     }
-}
 
-// MARK: - Visitor Service Delegate
+    // MARK: - Public API
 
-extension TealiumHelper: VisitorServiceDelegate {
-
-    func didUpdate(visitorProfile: TealiumVisitorProfile) {
-        // Audiences membership by ID
-        if let audiences = visitorProfile.audiences,
-           audiences["account_profile_106"] != nil {
-            print("Member of audience id 106")
+    /// Manually refresh values from the Tealium data layer
+    func refreshValues() {
+        guard let tealium = tealium else {
+            print("Tealium not initialized yet.")
+            return
         }
 
-        // Badge presence by ID
-        if let isVIP = visitorProfile.badges?["vip_customer"], isVIP {
-            print("VIP badge assigned")
+        let data = tealium.dataLayer.all
+
+        // device_advertising_id (IDFA)
+        let idfaValue = data["device_advertising_id"] as? String ?? "nil"
+
+        // device_advertising_enabled (Bool)
+        let enabledBool = data["device_advertising_enabled"] as? Bool
+        let enabledValue = enabledBool.map { String($0) } ?? "nil"
+
+        // device_tracking_authorization (String, e.g. "authorized", "denied")
+        let authValue = data["device_tracking_authorization"] as? String ?? "nil"
+
+        // Update UI properties
+        DispatchQueue.main.async {
+            self.idfa = idfaValue
+            self.advertisingEnabled = enabledValue
+            self.trackingAuthorization = authValue
         }
 
-        // Current visit example (audiences/badges are visitor-scope only)
-        if let currentVisitString = visitorProfile.currentVisit?.strings?["34"] {
-            print("Current visit string attribute 34: \(currentVisitString)")
-        }
-        // Post a notification so UI components can react to profile updates
-        NotificationCenter.default.post(name: .tealiumVisitorProfileUpdated, object: nil, userInfo: ["profile": visitorProfile])
+        // Console logs for debugging
+        print("----- Tealium Attribution Values -----")
+        print("device_advertising_id         = \(idfaValue)")
+        print("device_advertising_enabled    = \(enabledValue)")
+        print("device_tracking_authorization = \(authValue)")
+        print("--------------------------------------")
     }
-}
 
-// Notification helpers used by the app UI
-extension Notification.Name {
-    static let tealiumVisitorProfileUpdated = Notification.Name("tealiumVisitorProfileUpdated")
+    /// Optional: Send a simple test event through Tealium (not required for IDFA)
+    func trackTestEvent() {
+        let event = TealiumEvent("test_event", dataLayer: [
+            "example_key": "example_value"
+        ])
+        tealium?.track(event)
+    }
 }
